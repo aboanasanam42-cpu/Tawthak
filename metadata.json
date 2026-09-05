@@ -1,0 +1,6 @@
+{
+  "name": "Dental Vault",
+  "description": "Dental Case Documentation with interactive FDI odontogram, visit tracking, before/after image slider, and PDF clinical reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

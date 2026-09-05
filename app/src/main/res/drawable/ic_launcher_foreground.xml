@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Center 66dp safe zone (21,21 to 87,87) -->
+    <!-- Stylized Tooth Crown & Roots -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M54,28 C45.5,28 37,30.5 35,37 C33,43 35.5,50 37,58 C38.5,65 41,74 44.5,80 C46.5,83 49.5,82.5 50.5,78 C52,71 52.5,63 54,63 C55.5,63 56,71 57.5,78 C58.5,82.5 61.5,83 63.5,80 C67,74 69.5,65 71,58 C72.5,50 75,43 73,37 C71,30.5 62.5,28 54,28 Z" />
+    <!-- Tooth Occlusal Shading / Contour -->
+    <path
+        android:fillColor="#E0F2FE"
+        android:pathData="M46,33 C49,35 52,36 54,36 C56,36 59,35 62,33 C67,34.5 69,38 68,43 C67,49 65.5,56 64,62 C61.5,55 58,52 54,52 C50,52 46.5,55 44,62 C42.5,56 41,49 40,43 C39,38 41,34.5 46,33 Z" />
+    <!-- Medical Plus Badge in the center of tooth -->
+    <path
+        android:fillColor="#0D9488"
+        android:pathData="M51.5,41 H56.5 V46 H61.5 V51 H56.5 V56 H51.5 V51 H46.5 V46 H51.5 Z" />
+    <!-- Sparkle Accent near top right -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M70,30 L71.5,34 L75.5,35.5 L71.5,37 L70,41 L68.5,37 L64.5,35.5 L68.5,34 Z" />
+</vector>
