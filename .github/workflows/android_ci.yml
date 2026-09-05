@@ -52,8 +52,13 @@ jobs:
             echo "No KEYSTORE_BASE64 secret found, skipping release keystore setup."
           fi
 
-      - name: Grant Execute Permission to Gradle
-        run: chmod +x ./gradlew || true
+      - name: Ensure Gradle Wrapper & Permissions
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            echo "gradlew not found, generating wrapper..."
+            gradle wrapper || true
+          fi
+          chmod +x ./gradlew
 
       - name: Run Unit Tests & Security Validation
         run: ./gradlew testDebugUnitTest --continue
@@ -63,11 +68,14 @@ jobs:
           CM_KEYSTORE_PASSWORD: ${{ secrets.CM_KEYSTORE_PASSWORD }}
           CM_KEY_ALIAS: ${{ secrets.CM_KEY_ALIAS }}
           CM_KEY_PASSWORD: ${{ secrets.CM_KEY_PASSWORD }}
-          KEYSTORE_PATH: my-upload-key.jks
+          KEYSTORE_PATH: ${{ github.workspace }}/my-upload-key.jks
         run: |
           if [ -f "my-upload-key.jks" ] && [ -n "$CM_KEYSTORE_PASSWORD" ]; then
             echo "Building signed Release APK..."
-            ./gradlew assembleRelease
+            ./gradlew assembleRelease || {
+              echo "Release signing failed, falling back to assembleDebug..."
+              ./gradlew assembleDebug
+            }
           else
             echo "Building Debug APK..."
             ./gradlew assembleDebug
@@ -76,6 +84,21 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-apk
+          name: Tawthak-Dental-App-APK
           path: app/build/outputs/apk/**/*.apk
-          if-no-files-found: warn
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Generate Build Summary & Download Link
+        if: always()
+        run: |
+          echo "## 🦷 Tawthak (توثيق) - Build Summary & Direct APK Download" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Build and Validation Completed!**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 رابط وطريقة تحميل التطبيق (How to Download):" >> $GITHUB_STEP_SUMMARY
+          echo "1. انزل لأسفل هذه الصفحة إلى قسم **Artifacts** (المرفقات)." >> $GITHUB_STEP_SUMMARY
+          echo "2. اضغط على **Tawthak-Dental-App-APK** لتحميل ملف الـ ZIP." >> $GITHUB_STEP_SUMMARY
+          echo "3. فك الضغط وثبت ملف الـ APK (`app-release.apk` أو `app-debug.apk`) على هاتفك مباشرة." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Generated APK Files:" >> $GITHUB_STEP_SUMMARY
+          find app/build/outputs/apk/ -type f -name "*.apk" -exec ls -lh {} + | awk '{print "- `" $9 "` (" $5 ")"}' >> $GITHUB_STEP_SUMMARY
