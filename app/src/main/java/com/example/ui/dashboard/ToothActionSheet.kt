@@ -23,6 +23,7 @@ import com.example.domain.model.FdiTeethHelper
 import com.example.domain.model.OdontogramRecord
 import com.example.domain.model.ToothStatus
 import com.example.domain.model.ToothSurface
+import com.example.util.LocalDentalStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +34,8 @@ fun ToothActionSheet(
     onSaveStatus: (toothNumber: Int, status: ToothStatus, surfaces: List<String>) -> Unit,
     onResetTooth: (toothNumber: Int) -> Unit
 ) {
+    val strings = LocalDentalStrings.current
+
     var selectedStatus by remember(currentRecord) {
         mutableStateOf(currentRecord?.status ?: ToothStatus.SOUND)
     }
@@ -66,7 +69,7 @@ fun ToothActionSheet(
             ) {
                 Column {
                     Text(
-                        text = "Tooth #$toothNumber",
+                        text = if (strings.isAr) "السن رقم #$toothNumber" else "Tooth #$toothNumber",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -88,7 +91,7 @@ fun ToothActionSheet(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Reset Tooth to Sound",
+                            contentDescription = strings.resetToSound,
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
@@ -99,7 +102,7 @@ fun ToothActionSheet(
 
             // Clinical Status Selector
             Text(
-                text = "Clinical Diagnosis / Condition",
+                text = if (strings.isAr) "التشخيص وحالة السن السريرية:" else "Clinical Diagnosis / Condition",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -140,7 +143,7 @@ fun ToothActionSheet(
                                             .background(status.color)
                                     )
                                     Text(
-                                        text = status.label,
+                                        text = strings.getToothStatusLabel(status),
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         color = MaterialTheme.colorScheme.onSurface,
@@ -160,7 +163,7 @@ fun ToothActionSheet(
             if (selectedStatus in listOf(ToothStatus.CARIES, ToothStatus.RESTORATION, ToothStatus.CROWN, ToothStatus.ENDO)) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
-                    text = "Involved Surfaces",
+                    text = strings.surfacesTitle,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -219,7 +222,7 @@ fun ToothActionSheet(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Cancel")
+                    Text(strings.cancel)
                 }
 
                 Button(
@@ -239,7 +242,7 @@ fun ToothActionSheet(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    Text("Apply to Tooth")
+                    Text(strings.save)
                 }
             }
         }

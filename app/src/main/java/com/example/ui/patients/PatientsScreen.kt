@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.Patient
 import com.example.ui.DentalViewModel
+import com.example.util.LocalDentalStrings
 
 @Composable
 fun PatientsScreen(
@@ -28,6 +29,7 @@ fun PatientsScreen(
     onPatientSelected: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val strings = LocalDentalStrings.current
     val patients by viewModel.patients.collectAsState()
     val selectedPatientId by viewModel.selectedPatientId.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -52,13 +54,13 @@ fun PatientsScreen(
             ) {
                 Column {
                     Text(
-                        text = "Patient Records",
+                        text = strings.navPatients,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "${patients.size} active patient files",
+                        text = if (strings.isAr) "${patients.size} ملف مريض مسجل" else "${patients.size} active patient files",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -73,7 +75,7 @@ fun PatientsScreen(
                         .size(48.dp)
                         .testTag("add_patient_fab")
                 ) {
-                    Icon(imageVector = Icons.Default.PersonAdd, contentDescription = "Add Patient")
+                    Icon(imageVector = Icons.Default.PersonAdd, contentDescription = strings.newPatientBtn)
                 }
             }
         }
@@ -83,7 +85,7 @@ fun PatientsScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { viewModel.setSearchQuery(it) },
-                label = { Text("Search by name or phone") },
+                label = { Text(if (strings.isAr) "البحث بالاسم أو الهاتف" else "Search by name or phone") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = if (searchQuery.isNotBlank()) {
                     {
@@ -122,7 +124,11 @@ fun PatientsScreen(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = if (searchQuery.isNotBlank()) "No patients matching '$searchQuery'" else "No patients added yet.",
+                            text = if (searchQuery.isNotBlank()) {
+                                if (strings.isAr) "لا توجد نتائج مطابقة لـ '$searchQuery'" else "No patients matching '$searchQuery'"
+                            } else {
+                                if (strings.isAr) "لم يتم تسجيل أي مريض بعد." else "No patients added yet."
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -170,9 +176,12 @@ fun PatientsScreen(
     if (patientToDelete != null) {
         AlertDialog(
             onDismissRequest = { patientToDelete = null },
-            title = { Text("Delete Patient Case?") },
+            title = { Text(if (strings.isAr) "حذف ملف المريض؟" else "Delete Patient Case?") },
             text = {
-                Text("This will permanently delete all records, visits, odontogram charts, and clinical media for ${patientToDelete!!.fullName}.")
+                Text(
+                    if (strings.isAr) "سيتم حذف جميع سجلات ومخططات وزيارات المريض ${patientToDelete!!.fullName} بشكل دائم."
+                    else "This will permanently delete all records, visits, odontogram charts, and clinical media for ${patientToDelete!!.fullName}."
+                )
             },
             confirmButton = {
                 Button(
@@ -182,12 +191,12 @@ fun PatientsScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("Delete Case")
+                    Text(strings.delete)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { patientToDelete = null }) {
-                    Text("Cancel")
+                    Text(strings.cancel)
                 }
             }
         )

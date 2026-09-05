@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import com.example.ui.DentalViewModel
+import com.example.util.LocalDentalStrings
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -32,6 +33,7 @@ fun PdfReportScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val strings = LocalDentalStrings.current
     val selectedPatient by viewModel.selectedPatient.collectAsState()
     val odontogramRecords by viewModel.currentOdontogram.collectAsState()
     val visits by viewModel.currentVisits.collectAsState()
@@ -51,13 +53,13 @@ fun PdfReportScreen(
         item {
             Column {
                 Text(
-                    text = "Clinical PDF Report",
+                    text = strings.navReport,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Standardized clinical documentation ready for export & printing",
+                    text = if (strings.isAr) "توثيق سريري قياسي شامل جاهز للتصدير والطباعة" else "Standardized clinical documentation ready for export & printing",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -160,11 +162,11 @@ fun PdfReportScreen(
                                 strokeWidth = 2.dp
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Assembling PDF Summary...")
+                            Text(if (strings.isAr) "جاري إعداد تقرير الـ PDF..." else "Assembling PDF Summary...")
                         } else {
                             Icon(imageVector = Icons.Default.Description, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Generate Clinical PDF Report", fontWeight = FontWeight.Bold)
+                            Text(if (strings.isAr) "توليد تقرير الحالة PDF" else "Generate Clinical PDF Report", fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -197,7 +199,8 @@ fun PdfReportScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "Ready to export or print • ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())}",
+                                    text = if (strings.isAr) "جاهز للتصدير أو الطباعة • ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())}"
+                                    else "Ready to export or print • ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())}",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -222,7 +225,7 @@ fun PdfReportScreen(
                             ) {
                                 Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Share / Send")
+                                Text(if (strings.isAr) "مشاركة / إرسال" else "Share / Send")
                             }
 
                             // View / Print Button
@@ -237,7 +240,7 @@ fun PdfReportScreen(
                             ) {
                                 Icon(imageVector = Icons.Default.Print, contentDescription = null, modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Print / View")
+                                Text(if (strings.isAr) "معاينة / طباعة" else "Print / View")
                             }
                         }
                     }

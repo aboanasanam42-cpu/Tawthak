@@ -28,6 +28,7 @@ import com.example.ui.DentalDashboardStats
 import com.example.ui.DentalViewModel
 import com.example.ui.patients.AddPatientDialog
 import com.example.ui.patients.AddVisitDialog
+import com.example.util.LocalDentalStrings
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -40,6 +41,7 @@ fun DashboardScreen(
     onNavigateToReport: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val strings = LocalDentalStrings.current
     val stats by viewModel.dashboardStats.collectAsState()
     val patients by viewModel.patients.collectAsState()
     val selectedPatient by viewModel.selectedPatient.collectAsState()
@@ -95,7 +97,7 @@ fun DashboardScreen(
                                 )
                             }
                             Text(
-                                text = "Active Patient Case",
+                                text = strings.activePatientCase,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -109,7 +111,7 @@ fun DashboardScreen(
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier.testTag("switch_patient_button")
                             ) {
-                                Text("Switch Case", fontSize = 12.sp)
+                                Text(strings.switchPatient, fontSize = 12.sp)
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Icon(
                                     imageVector = Icons.Default.ArrowDropDown,
@@ -127,7 +129,7 @@ fun DashboardScreen(
                                         text = {
                                             Column {
                                                 Text(p.fullName, fontWeight = FontWeight.Bold)
-                                                Text("${p.age} yrs • ${p.phone}", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                Text("${p.age} ${strings.yearsSuffix} • ${p.phone}", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                             }
                                         },
                                         onClick = {
@@ -144,7 +146,7 @@ fun DashboardScreen(
                                 }
                                 HorizontalDivider()
                                 DropdownMenuItem(
-                                    text = { Text("Add New Patient", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary) },
+                                    text = { Text(strings.newPatientBtn, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary) },
                                     onClick = {
                                         showPatientSelectorMenu = false
                                         showAddPatientDialog = true
@@ -177,7 +179,7 @@ fun DashboardScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "${p.age} years old • ${p.gender}",
+                                text = "${p.age} ${strings.yearsSuffix} • ${p.gender}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                             )
@@ -206,7 +208,7 @@ fun DashboardScreen(
                                         modifier = Modifier.size(14.dp)
                                     )
                                     Text(
-                                        text = "Med Alert: ${p.medicalHistory}",
+                                        text = "${strings.medicalAlertLabel} ${p.medicalHistory}",
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.SemiBold
                                     )
@@ -235,12 +237,12 @@ fun DashboardScreen(
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("AI Clinical Validation", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                                Text(if (strings.isAr) "استشارة الذكاء الاصطناعي" else "AI Clinical Validation", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                             }
                         }
                     } else {
                         Text(
-                            text = "No patient selected. Tap switch case to choose or add a patient.",
+                            text = strings.selectPatientPrompt,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                         )
                     }
@@ -255,21 +257,21 @@ fun DashboardScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 StatItem(
-                    title = "Patients",
+                    title = strings.navPatients,
                     value = "${stats.totalPatients}",
                     icon = Icons.Default.People,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
                 )
                 StatItem(
-                    title = "Visits Logged",
+                    title = if (strings.isAr) "الزيارات" else "Visits",
                     value = "${stats.totalVisits}",
                     icon = Icons.Default.EventNote,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.weight(1f)
                 )
                 StatItem(
-                    title = "Balance Due",
+                    title = strings.balanceDue,
                     value = "$${"%.0f".format(stats.totalOutstanding)}",
                     icon = Icons.Default.MonetizationOn,
                     color = if (stats.totalOutstanding > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
@@ -305,25 +307,25 @@ fun DashboardScreen(
                 ) {
                     ActionToolButton(
                         icon = Icons.Default.AddComment,
-                        label = "Log Visit",
+                        label = strings.addVisit,
                         onClick = { showAddVisitDialog = true },
                         testTag = "action_log_visit"
                     )
                     ActionToolButton(
                         icon = Icons.Default.AutoAwesome,
-                        label = "AI Clinical",
+                        label = if (strings.isAr) "تدقيق AI" else "AI Clinical",
                         onClick = { showAiConsultDialog = true },
                         testTag = "action_ai_clinical"
                     )
                     ActionToolButton(
                         icon = Icons.Default.Compare,
-                        label = "Before/After",
+                        label = strings.navMedia,
                         onClick = onNavigateToMedia,
                         testTag = "action_before_after"
                     )
                     ActionToolButton(
                         icon = Icons.Default.PictureAsPdf,
-                        label = "PDF Report",
+                        label = strings.navReport,
                         onClick = onNavigateToReport,
                         testTag = "action_pdf_report"
                     )
@@ -339,7 +341,7 @@ fun DashboardScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Visit History & Treatments (${visits.size})",
+                    text = "${strings.clinicalVisits} (${visits.size})",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -350,7 +352,7 @@ fun DashboardScreen(
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Add Visit", fontSize = 12.sp)
+                    Text(strings.addVisit, fontSize = 12.sp)
                 }
             }
         }
@@ -521,6 +523,7 @@ fun VisitCard(
     visit: com.example.domain.model.Visit,
     onDelete: () -> Unit
 ) {
+    val strings = LocalDentalStrings.current
     val dateStr = remember(visit.visitDate) {
         SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(visit.visitDate))
     }
@@ -568,7 +571,7 @@ fun VisitCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.DeleteOutline,
-                        contentDescription = "Delete Visit",
+                        contentDescription = strings.delete,
                         tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
                         modifier = Modifier.size(18.dp)
                     )
@@ -578,20 +581,20 @@ fun VisitCard(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Complaint: ${visit.chiefComplaint}",
+                text = "${strings.complaint} ${visit.chiefComplaint}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Diagnosis: ${visit.diagnosis}",
+                text = "${strings.diagnosis} ${visit.diagnosis}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Treatment: ${visit.treatmentPlan}",
+                text = "${strings.treatment} ${visit.treatmentPlan}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -606,19 +609,19 @@ fun VisitCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Billed: $${"%.2f".format(visit.cost)}",
+                    text = "${strings.cost} $${"%.2f".format(visit.cost)}",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Paid: $${"%.2f".format(visit.paid)}",
+                    text = "${strings.paid} $${"%.2f".format(visit.paid)}",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold
                 )
                 if (visit.balance > 0) {
                     Text(
-                        text = "Balance: $${"%.2f".format(visit.balance)}",
+                        text = "${strings.balance} $${"%.2f".format(visit.balance)}",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.error,
                         fontWeight = FontWeight.Bold

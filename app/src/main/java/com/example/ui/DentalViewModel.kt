@@ -31,6 +31,17 @@ class DentalViewModel(
     private val geminiService: GeminiClinicalService = GeminiClinicalService()
 ) : ViewModel() {
 
+    private val _appLanguage = MutableStateFlow(com.example.util.AppLanguage.ARABIC)
+    val appLanguage: StateFlow<com.example.util.AppLanguage> = _appLanguage.asStateFlow()
+
+    fun setLanguage(language: com.example.util.AppLanguage) {
+        _appLanguage.value = language
+    }
+
+    fun toggleLanguage() {
+        _appLanguage.value = _appLanguage.value.other()
+    }
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
